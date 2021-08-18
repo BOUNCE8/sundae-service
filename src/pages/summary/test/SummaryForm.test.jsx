@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import SummaryForm from '../SummaryForm';
 
 test('initial checks', () => {
@@ -15,11 +16,9 @@ test('checking checkbox enables button, and un-checking disables it once more', 
   const confirmButton = screen.getByRole('button', { name: /confirm order/i });
   const checkBox = screen.getByRole('checkbox', { name: 'I agree to Terms and Conditions' });
 
-  fireEvent.click(checkBox);
-  expect(checkBox).toBeChecked();
+  userEvent.click(checkBox);
   expect(confirmButton).toBeEnabled();
 
-  fireEvent.click(checkBox);
-  expect(checkBox).not.toBeChecked();
+  userEvent.click(checkBox);
   expect(confirmButton).toBeDisabled();
 });
