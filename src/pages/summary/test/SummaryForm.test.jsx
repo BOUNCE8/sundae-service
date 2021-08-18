@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SummaryForm from '../SummaryForm';
 
@@ -21,4 +21,23 @@ test('checking checkbox enables button, and un-checking disables it once more', 
 
   userEvent.click(checkBox);
   expect(confirmButton).toBeDisabled();
+});
+
+test('pop-over responds to hover/un-hover', async () => {
+  render(<SummaryForm />);
+  const nullPopover = screen.queryByText(/no ice cream will actually be delivered/i);
+  expect(nullPopover).not.toBeInTheDocument();
+
+  // popover appears when user hovers over terms and conditions
+
+  const termsAndCondtions = screen.getByText(/Terms and Conditions/i);
+  userEvent.hover(termsAndCondtions);
+  const popover = screen.getByText(/no ice cream will actually be delivered/i);
+  expect(popover).toBeInTheDocument();
+
+  // popover disapears when user is no longer hovering over terms and conditions
+  userEvent.unhover(termsAndCondtions);
+  await waitForElementToBeRemoved(() =>
+    screen.queryByText(/no ice cream will actually be delivered/i)
+  );
 });
