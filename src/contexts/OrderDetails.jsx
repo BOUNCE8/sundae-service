@@ -1,0 +1,69 @@
+import { createContext, useContext, useState, useMemo, useEffect } from 'react';
+
+import { pricePerItem } from '../constants';
+
+const OrderDetails = createContext();
+
+// create custom hook to check if we are inside of a provider
+export const useOrderDetails = () => {
+  const context = useContext(OrderDetails);
+
+  if (!context) {
+    throw new Error('userOrderDetails must be used within an OrderDetailsProvider');
+  }
+
+  return context;
+};
+
+// helper function to return total of each category of items.
+const calculateSubTotal = (optionType, optionCounts) => {
+  let optionCountTally = 0;
+  for (const count of optionCounts[optionType].values()) {
+    optionCountTally += count;
+  }
+  return optionCountTally * pricePerItem[optionType];
+};
+
+// create Provider
+export const OrderDetailsProvider = (props) => {
+  const [optionCounts, setOptionCounts] = useState({
+    scoops: new Map(),
+    toppings: new Map(),
+  });
+
+  // state for totals.
+  const [totals, setTotals] = useState({
+    scoops: 0,
+    toppings: 0,
+    grandTotal: 0,
+  });
+
+  useEffect(() => {
+    const scoopsSubTotal = calculateSubTotal('sccops', optionCounts);
+    const toppingsSubTotal = calculateSubTotal('toppings', optionCounts);
+    const grandTotal = scoopsSubTotal + toppingsSubTotal;
+    setTotals({
+      scoops: scoopsSubTotal,
+      toppings: toppingsSubTotal,
+      grandTotal,
+    });
+  }, [optionsCount]);
+
+  const value = useMemo(() => {
+    const updateItemCount = (itemName, newItemCount, optionType) => {
+      // create new copy of current state of option so to not mutate original.
+      const newOptionCounts = { ...optionCounts };
+      // update option count for this item with the new count value ex:(option = scoops, item = Vanilla, amount = 1).
+      const optionCountMap = optionCounts[optionType];
+      optionCountMap.set(itemName, parseInt(newItemCount));
+
+      setOptionCounts(newOptionCounts);
+    };
+
+    // getter: object containing 'option count' for scoops and toppings, sub-totals & totals.
+    // setter: update option count.
+    return [{ ...optionCounts, totals }, updateItemCount];
+  }, [optionCounts, totals]);
+
+  return <OrderDetails value={value} {...props} />;
+};

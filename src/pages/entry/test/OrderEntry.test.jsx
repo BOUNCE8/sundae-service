@@ -11,7 +11,7 @@ test('handles errors for scoops and toppings routes', async () => {
 
   render(<OrderEntry />);
 
-  // This method awaits for all async calls to be made before returning the result.
+  // This method awaits for multiple async calls to be made before returning the result.
   await waitFor(async () => {
     const alerts = await screen.findAllByRole('alert');
 
