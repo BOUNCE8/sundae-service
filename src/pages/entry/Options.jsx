@@ -4,10 +4,13 @@ import axios from 'axios';
 import ScoopOption from './ScoopOption';
 import ToppingOption from './ToppingOption';
 import AlertBanner from '../common/AlertBanner';
+import { pricePerItem } from '../../constants';
+import { useOrderDetails } from '../../contexts/OrderDetails';
 
 export const Options = ({ optionType }) => {
   const [items, setItems] = useState([]);
   const [error, setError] = useState(false);
+  const [orderDetails, updateItemCount] = useOrderDetails();
 
   // optionType is 'scoops' or 'toppings' - create enum to limit this instead
   useEffect(() => {
@@ -22,12 +25,29 @@ export const Options = ({ optionType }) => {
   }
 
   const ItemComponent = optionType === 'scoops' ? ScoopOption : ToppingOption;
+  const title = optionType[0].toUpperCase() + optionType.slice(1).toLowerCase();
 
   const OptionItems = items.map((item) => (
-    <ItemComponent key={item.name} name={item.name} imagePath={item.imagePath} />
+    <ItemComponent
+      key={item.name}
+      name={item.name}
+      imagePath={item.imagePath}
+      updateItemCount={(itemName, newItemCount) =>
+        updateItemCount(itemName, newItemCount, optionType)
+      }
+    />
   ));
 
-  return <Row>{OptionItems}</Row>;
+  return (
+    <>
+      <h2>{title}</h2>
+      <p>{pricePerItem[optionType]} each</p>
+      <p>
+        {title} total: {orderDetails.totals[optionType]}
+      </p>
+      <Row>{OptionItems}</Row>
+    </>
+  );
 };
 
 export default Options;

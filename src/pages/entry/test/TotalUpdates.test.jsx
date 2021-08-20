@@ -1,12 +1,13 @@
 import { render, screen, userEvent } from '@testing-library/react';
 import Options from '../Options';
+import { OrderDetailsProvider } from '../../../contexts/OrderDetails';
 
-test('make sure the scoops sub-total starts at £0.00', async () => {
-  render(<Options optionType='scoops' />);
+test('update scoop sub-total when scoops change', async () => {
+  // make sure to wrap component in provider that has the context needed.
+  render(<Options optionType='scoops' />, { wrapper: OrderDetailsProvider });
 
-  // check intial subtotal value / partial match
+  // make sure the scoops sub-total starts at £0.00 - partial mach
   const scoopsSubTotal = screen.getByText('Scoops total: £', { exact: false });
-
   expect(scoopsSubTotal).toHaveTextContent('0.00');
 
   // update vanilla scoops by 1 and update scoops sub-total
