@@ -6,6 +6,7 @@ import ToppingOption from './ToppingOption';
 import AlertBanner from '../common/AlertBanner';
 import { pricePerItem } from '../../constants';
 import { useOrderDetails } from '../../contexts/OrderDetails';
+import { formatToCurrency } from '../../contexts/OrderDetails';
 
 export const Options = ({ optionType }) => {
   const [items, setItems] = useState([]);
@@ -21,13 +22,15 @@ export const Options = ({ optionType }) => {
   }, [optionType]);
 
   if (error) {
+    //@ts-ignore
     return <AlertBanner />;
   }
 
   const ItemComponent = optionType === 'scoops' ? ScoopOption : ToppingOption;
+  // console.log(items);
   const title = optionType[0].toUpperCase() + optionType.slice(1).toLowerCase();
 
-  const OptionItems = items.map((item) => (
+  const optionItems = items.map((item) => (
     <ItemComponent
       key={item.name}
       name={item.name}
@@ -41,13 +44,11 @@ export const Options = ({ optionType }) => {
   return (
     <>
       <h2>{title}</h2>
-      <p>{pricePerItem[optionType]} each</p>
+      <p>{formatToCurrency(pricePerItem[optionType])} each</p>
       <p>
         {title} total: {orderDetails.totals[optionType]}
       </p>
-      <Row>{OptionItems}</Row>
+      <Row>{optionItems}</Row>
     </>
   );
 };
-
-export default Options;

@@ -10,6 +10,7 @@ export const formatToCurrency = (amount) => {
   }).format(amount);
 };
 
+// @ts-ignore
 const OrderDetails = createContext();
 
 // create custom hook to check if we are inside of a provider
@@ -27,6 +28,7 @@ export const useOrderDetails = () => {
 const calculateSubTotal = (optionType, optionCounts) => {
   let optionCountTally = 0;
   for (const count of optionCounts[optionType].values()) {
+    console.log(count);
     optionCountTally += count;
   }
   return optionCountTally * pricePerItem[optionType];
@@ -74,5 +76,5 @@ export const OrderDetailsProvider = (props) => {
     return [{ ...optionCounts, totals }, updateItemCount];
   }, [optionCounts, totals]);
 
-  return <OrderDetails value={value} {...props} />;
+  return <OrderDetails.Provider value={value} {...props} />;
 };
