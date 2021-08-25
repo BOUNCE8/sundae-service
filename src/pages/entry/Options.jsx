@@ -22,7 +22,6 @@ export const Options = ({ optionType }) => {
   }, [optionType]);
 
   if (error) {
-    //@ts-ignore
     return <AlertBanner />;
   }
 

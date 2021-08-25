@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import { pricePerItem } from '../constants';
 
+// @ts-ignore
+const OrderDetails = createContext();
+
 //helper function to format number to currency
 export const formatToCurrency = (amount) => {
   return new Intl.NumberFormat('en-GB', {
@@ -9,9 +12,6 @@ export const formatToCurrency = (amount) => {
     minimumFractionDigits: 2,
   }).format(amount);
 };
-
-// @ts-ignore
-const OrderDetails = createContext();
 
 // create custom hook to check if we are inside of a provider
 export const useOrderDetails = () => {
@@ -28,7 +28,7 @@ export const useOrderDetails = () => {
 const calculateSubTotal = (optionType, optionCounts) => {
   let optionCountTally = 0;
   for (const count of optionCounts[optionType].values()) {
-    console.log(count);
+    // console.log(count);
     optionCountTally += count;
   }
   return optionCountTally * pricePerItem[optionType];
@@ -43,6 +43,7 @@ export const OrderDetailsProvider = (props) => {
 
   // state for totals.
   const currencyConvert = formatToCurrency(0);
+
   const [totals, setTotals] = useState({
     scoops: currencyConvert,
     toppings: currencyConvert,
@@ -50,12 +51,12 @@ export const OrderDetailsProvider = (props) => {
   });
 
   useEffect(() => {
-    const scoopsSubTotal = calculateSubTotal('sccops', optionCounts);
+    const scoopsSubTotal = calculateSubTotal('scoops', optionCounts);
     const toppingsSubTotal = calculateSubTotal('toppings', optionCounts);
     const grandTotal = scoopsSubTotal + toppingsSubTotal;
     setTotals({
       scoops: formatToCurrency(scoopsSubTotal),
-      toppings: formatToCurreny(toppingsSubTotal),
+      toppings: formatToCurrency(toppingsSubTotal),
       grandTotal: formatToCurrency(grandTotal),
     });
   }, [optionCounts]);

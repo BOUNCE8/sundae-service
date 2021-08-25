@@ -1,10 +1,11 @@
-import { render, screen, userEvent } from '@testing-library/react';
-import Options from '../Options';
-import { OrderDetailsProvider } from '../../../contexts/OrderDetails';
+import { render, screen } from '../../../test-utils/testing-library-utils';
+import userEvent from '@testing-library/react';
+import { Options } from '../Options';
+// import { OrderDetailsProvider } from '../../../contexts/OrderDetails';
 
 test('update scoop sub-total when scoops change', async () => {
   // make sure to wrap component in provider that has the context needed.
-  render(<Options optionType='scoops' />, { wrapper: OrderDetailsProvider });
+  render(<Options optionType='scoops' />);
 
   // make sure the scoops sub-total starts at £0.00 - partial mach
   const scoopsSubTotal = screen.getByText('Scoops total: £', { exact: false });
