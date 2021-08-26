@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Row from 'react-bootstrap/Row';
 import axios from 'axios';
-import ScoopOption from './ScoopOption';
-import ToppingOption from './ToppingOption';
-import AlertBanner from '../common/AlertBanner';
+import { ScoopOption } from './ScoopOption';
+import { ToppingOption } from './ToppingOption';
+import { AlertBanner } from '../common/AlertBanner';
 import { pricePerItem } from '../../constants';
 import { useOrderDetails } from '../../contexts/OrderDetails';
 import { formatToCurrency } from '../../contexts/OrderDetails';
@@ -13,7 +13,7 @@ export const Options = ({ optionType }) => {
   const [error, setError] = useState(false);
   const [orderDetails, updateItemCount] = useOrderDetails();
 
-  // optionType is 'scoops' or 'toppings' - create enum to limit this instead
+  // optionType is 'scoops' or 'toppings'
   useEffect(() => {
     axios
       .get(`http://localhost:3030/${optionType}`)
@@ -22,11 +22,11 @@ export const Options = ({ optionType }) => {
   }, [optionType]);
 
   if (error) {
+    // @ts-ignore
     return <AlertBanner />;
   }
 
   const ItemComponent = optionType === 'scoops' ? ScoopOption : ToppingOption;
-  // console.log(items);
   const title = optionType[0].toUpperCase() + optionType.slice(1).toLowerCase();
 
   const optionItems = items.map((item) => (

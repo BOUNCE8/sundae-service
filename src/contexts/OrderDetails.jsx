@@ -28,7 +28,6 @@ export const useOrderDetails = () => {
 const calculateSubTotal = (optionType, optionCounts) => {
   let optionCountTally = 0;
   for (const count of optionCounts[optionType].values()) {
-    // console.log(count);
     optionCountTally += count;
   }
   return optionCountTally * pricePerItem[optionType];
