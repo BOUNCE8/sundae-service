@@ -5,8 +5,7 @@ import { ScoopOption } from './ScoopOption';
 import { ToppingOption } from './ToppingOption';
 import { AlertBanner } from '../common/AlertBanner';
 import { pricePerItem } from '../../constants';
-import { useOrderDetails } from '../../contexts/OrderDetails';
-import { formatToCurrency } from '../../contexts/OrderDetails';
+import { useOrderDetails, formatToCurrency } from '../../contexts/OrderDetails';
 
 export const Options = ({ optionType }) => {
   const [items, setItems] = useState([]);

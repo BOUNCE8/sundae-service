@@ -1,7 +1,7 @@
 import { render, screen } from '../../../test-utils/testing-library-utils';
 import userEvent from '@testing-library/user-event';
 import { Options } from '../Options';
-// import { OrderDetailsProvider } from '../../../contexts/OrderDetails';
+import { OrderEntry } from '../OrderEntry';
 
 test('update scoop sub-total when scoops change', async () => {
   // make sure to wrap component in provider that has the context needed.
@@ -12,9 +12,9 @@ test('update scoop sub-total when scoops change', async () => {
   expect(scoopsSubTotal).toHaveTextContent('0.00');
 
   // update vanilla scoops by 1 and update scoops sub-total
-  const vanillaScoopInput = await screen.findByRole('spinbutton', { name: 'Vanilla' });
-  userEvent.clear(vanillaScoopInput);
-  userEvent.type(vanillaScoopInput, '1');
+  const vanillaScoop = await screen.findByRole('spinbutton', { name: 'Vanilla' });
+  userEvent.clear(vanillaScoop);
+  userEvent.type(vanillaScoop, '1');
   expect(scoopsSubTotal).toHaveTextContent('1.50');
 
   // update chocolate scoops by 2 and update scoops sub-total
@@ -37,8 +37,8 @@ test('update toppings sub-total when toppings change', async () => {
   expect(fudgeTopping).toBeChecked();
   expect(toppingSubtotal).toHaveTextContent('1.00');
 
-  // select another topping 'Cherries' and update the topping sub-total
-  const mochiTopping = await screen.findByRole('checkbox', { name: 'Cherries' });
+  // select another topping 'Mochi' and update the topping sub-total
+  const mochiTopping = await screen.findByRole('checkbox', { name: 'Mochi' });
   expect(mochiTopping).not.toBeChecked();
   userEvent.click(mochiTopping);
   expect(mochiTopping).toBeChecked();
@@ -49,4 +49,69 @@ test('update toppings sub-total when toppings change', async () => {
   userEvent.click(fudgeTopping);
   expect(fudgeTopping).not.toBeChecked();
   expect(toppingSubtotal).toHaveTextContent('1.00');
+});
+
+describe('grand total', () => {
+  test('grand total to start off at 0.00', () => {
+    render(<OrderEntry />);
+    const grandTotal = screen.getByRole('heading', { name: /Grand Total: \$/i });
+
+    expect(grandTotal).toHaveTextContent('0.00');
+  });
+
+  test('grand total updates when scoops are added first', async () => {
+    render(<OrderEntry />);
+    const grandTotal = screen.getByRole('heading', { name: /Grand Total: \$/i });
+    const vanillaScoop = await screen.findByRole('spinbutton', { name: 'Vanillla' });
+    const cherryTopping = await screen.findByRole('checkbox', { name: 'Cherries' });
+
+    // scoops added, then check grand total
+    userEvent.clear(vanillaScoop);
+    userEvent.type(vanillaScoop, '1');
+    expect(grandTotal).toHaveTextContent('1.50');
+
+    // topping added, then check grand total
+    userEvent.click(cherryTopping);
+    expect(grandTotal).toHaveTextContent('2.50');
+  });
+
+  test('grand total updates when toppings is added first', async () => {
+    render(<OrderEntry />);
+    const grandTotal = screen.getByRole('heading', { name: /Grand Total: \$/i });
+    const cherryTopping = await screen.findByRole('checkbox', { name: 'Cherries' });
+    const vanillaScoop = await screen.findByRole('spinbutton', { name: 'Vanillla' });
+
+    // topping added, then check grand total
+    userEvent.click(cherryTopping);
+    expect(grandTotal).toHaveTextContent('1.00');
+
+    // scoops added, then check grand total
+    userEvent.clear(vanillaScoop);
+    userEvent.type(vanillaScoop, '2');
+    expect(grandTotal).toHaveTextContent('4.00');
+  });
+
+  test('grand total updates correctly when items from both scoop and toppings have been added and again when an item is removed', async () => {
+    render(<OrderEntry />);
+    const grandTotal = screen.getByRole('heading', { name: /Grand Total: \$/i });
+    const mochiTopping = await screen.findByRole('spinbutton', { name: 'Mochi' });
+    const chocolateScoop = await screen.findByRole('spinbutton', { name: 'Chocolate' });
+
+    // scoops added, then check grand total
+    userEvent.clear(chocolateScoop);
+    userEvent.type(chocolateScoop, '3');
+    expect(grandTotal).toHaveTextContent('4.50');
+
+    // topping added, then check grand total
+    userEvent.click(mochiTopping);
+    expect(grandTotal).toHaveTextContent('5.50');
+
+    // removing 2 scoops, then check grand total
+    userEvent.type(chocolateScoop, '1');
+    expect(grandTotal).toHaveTextContent('2.50');
+
+    // remove topping, then check grand total
+    userEvent.click(mochiTopping);
+    expect(grandTotal).toHaveTextContent('1.50');
+  });
 });

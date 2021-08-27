@@ -19,7 +19,7 @@ const checkBoxLabel = (
   </span>
 );
 
-const SummaryForm = () => {
+export const SummaryForm = () => {
   const [tcChecked, setTcChecked] = useState(false);
   return (
     <Form>
@@ -37,5 +37,3 @@ const SummaryForm = () => {
     </Form>
   );
 };
-
-export default SummaryForm;
